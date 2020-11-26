@@ -33,14 +33,12 @@ button:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid red;
 }
 
 #app {
   width: 320px;
   height: 520px;
   position: relative;
-  border: 1px solid red;
 }
 
 .calculator {
