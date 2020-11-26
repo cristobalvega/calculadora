@@ -72,7 +72,6 @@ class CalculatorKey extends React.Component {
         const { onPress, className, ...props } = this.props
 
         return (
-            // <button className={`calculator-key ${className}`} {...props}/>
             <PointTarget onPoint={onPress}>
                 <button className={`calculator-key ${className}`} {...props}/>
             </PointTarget>
@@ -277,7 +276,11 @@ class Calculator extends React.Component {
 }
 
 ReactDOM.render(
-    <Calculator/>,
+    <div id={"wrapper"}>
+        <div id={"app"}>
+            <Calculator/>
+        </div>
+    </div>,
     document.getElementById('root')
 )
 
