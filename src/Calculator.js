@@ -1,83 +1,6 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import reportWebVitals from './reportWebVitals';
-import PointTarget from 'react-point'
-
-
-class AutoScalingText extends React.Component {
-    state = {
-        scale: 1
-    };
-
-    componentDidUpdate() {
-        const { scale } = this.state
-
-        const node = this.node
-        const parentNode = node.parentNode
-
-        const availableWidth = parentNode.offsetWidth
-        const actualWidth = node.offsetWidth
-        const actualScale = availableWidth / actualWidth
-
-        if (scale === actualScale)
-            return
-
-        if (actualScale < 1) {
-            this.setState({ scale: actualScale })
-        } else if (scale < 1) {
-            this.setState({ scale: 1 })
-        }
-    }
-
-    render() {
-        const { scale } = this.state
-
-        return (
-            <div
-                className="auto-scaling-text"
-                style={{ transform: `scale(${scale},${scale})` }}
-                ref={node => this.node = node}
-            >{this.props.children}</div>
-        )
-    }
-}
-
-class CalculatorDisplay extends React.Component {
-    render() {
-        const { value, ...props } = this.props
-
-        const language = navigator.language || 'en-US'
-        let formattedValue = parseFloat(value).toLocaleString(language, {
-            useGrouping: true,
-            maximumFractionDigits: 6
-        })
-
-        // Add back missing .0 in e.g. 12.0
-        const match = value.match(/\.\d*?(0*)$/)
-
-        if (match)
-            formattedValue += (/[1-9]/).test(match[0]) ? match[1] : match[0]
-
-        return (
-            <div {...props} className="calculator-display">
-                <AutoScalingText>{formattedValue}</AutoScalingText>
-            </div>
-        )
-    }
-}
-
-class CalculatorKey extends React.Component {
-    render() {
-        const { onPress, className, ...props } = this.props
-
-        return (
-            <PointTarget onPoint={onPress}>
-                <button className={`calculator-key ${className}`} {...props}/>
-            </PointTarget>
-        )
-    }
-}
+import React from "react";
+import CalculatorDisplay from "./CalculatorDisplay";
+import CalculatorKey from "./CalculatorKey";
 
 const CalculatorOperations = {
     '/': (prevValue, nextValue) => prevValue / nextValue,
@@ -86,6 +9,7 @@ const CalculatorOperations = {
     '-': (prevValue, nextValue) => prevValue - nextValue,
     '=': (prevValue, nextValue) => nextValue
 }
+
 
 class Calculator extends React.Component {
     state = {
@@ -245,11 +169,12 @@ class Calculator extends React.Component {
                     <div className="input-keys">
                         <div className="function-keys">
                             <CalculatorKey className="key-clear" onPress={() => clearDisplay ? this.clearDisplay() : this.clearAll()}>{clearText}</CalculatorKey>
-                            <CalculatorKey className="key-sign" onPress={() => this.toggleSign()}>MEM+</CalculatorKey>
-                            <CalculatorKey className="key-percent" onPress={() => this.inputPercent()}>MEM-</CalculatorKey>
+                            <CalculatorKey className="key-sign" onPress={() => this.toggleSign()}>±</CalculatorKey>
+                            <CalculatorKey className="key-percent" onPress={() => this.inputPercent()}>%</CalculatorKey>
                         </div>
                         <div className="digit-keys">
                             <CalculatorKey className="key-0" onPress={() => this.inputDigit(0)}>0</CalculatorKey>
+                            <CalculatorKey className="key-dot" onPress={() => this.inputDot()}>●</CalculatorKey>
                             <CalculatorKey className="key-1" onPress={() => this.inputDigit(1)}>1</CalculatorKey>
                             <CalculatorKey className="key-2" onPress={() => this.inputDigit(2)}>2</CalculatorKey>
                             <CalculatorKey className="key-3" onPress={() => this.inputDigit(3)}>3</CalculatorKey>
@@ -259,12 +184,13 @@ class Calculator extends React.Component {
                             <CalculatorKey className="key-7" onPress={() => this.inputDigit(7)}>7</CalculatorKey>
                             <CalculatorKey className="key-8" onPress={() => this.inputDigit(8)}>8</CalculatorKey>
                             <CalculatorKey className="key-9" onPress={() => this.inputDigit(9)}>9</CalculatorKey>
+                            <CalculatorKey className="key-plus" onPress={() => this.inputDigit(+)}>+</CalculatorKey>
                         </div>
                     </div>
                     <div className="operator-keys">
                         <CalculatorKey className="key-divide" onPress={() => this.performOperation('/')}>÷</CalculatorKey>
-                        <CalculatorKey className="key-multiply" onPress={() => this.performOperation('*')}>×</CalculatorKey>
-                        <CalculatorKey className="key-subtract" onPress={() => this.performOperation('-')}>−</CalculatorKey>
+{/*                         <CalculatorKey className="key-multiply" onPress={() => this.performOperation('*')}>×</CalculatorKey>
+ */}                        <CalculatorKey className="key-subtract" onPress={() => this.performOperation('-')}>−</CalculatorKey>
                         <CalculatorKey className="key-add" onPress={() => this.performOperation('+')}>+</CalculatorKey>
                         <CalculatorKey className="key-equals" onPress={() => this.performOperation('=')}>=</CalculatorKey>
                     </div>
@@ -274,16 +200,4 @@ class Calculator extends React.Component {
     }
 }
 
-ReactDOM.render(
-    <div id={"wrapper"}>
-        <div id={"app"}>
-            <Calculator/>
-        </div>
-    </div>,
-    document.getElementById('root')
-)
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+export default Calculator;
